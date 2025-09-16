@@ -1,6 +1,6 @@
-# link-roll (Next.js + Supabase)
+# Video Playlist App (Next.js + Supabase)
 
-A minimal boilerplate for a random video/link "roll" app.
+The boilerplate for a video/link "roll" app.
 
 ## Quick Start
 
