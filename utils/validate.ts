@@ -1,22 +1,8 @@
 export function isValidUrl(url: string): boolean {
-  try {
-    const u = new URL(url.trim());
-    return !!u.protocol && !!u.hostname;
-  } catch {
-    return false;
-  }
+  try { new URL(url.trim()); return true; } catch { return false; }
 }
 
-export function isAllowedDomain(url: string): boolean {
-  try {
-    const h = new URL(url).hostname.replace(/^www\./, "");
-    return [
-      "youtube.com",
-      "youtu.be",
-      "youtube-nocookie.com",
-      "vimeo.com"
-    ].some(d => h.endsWith(d));
-  } catch {
-    return false;
-  }
+// Allow anything; keep basic URL check only
+export function isAllowedDomain(_url: string): boolean {
+  return true;
 }
