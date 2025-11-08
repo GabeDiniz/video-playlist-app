@@ -1,3 +1,4 @@
+// app/api/roll/route.ts
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
@@ -6,6 +7,21 @@ export async function POST() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
+  // Get all of *this user's* links
+  const allRes = await supabase
+    .from("links")
+    .select("id,url,title,thumbnail_url,embed_html")
+    .order("created_at", { ascending: false });
+
+  if (allRes.error) {
+    return NextResponse.json({ error: allRes.error.message }, { status: 500 });
+  }
+  const all = allRes.data ?? [];
+  if (all.length === 0) {
+    return NextResponse.json({ error: "No links yet." }, { status: 404 });
+  }
+
+  // Get last 3 rolls
   const last = await supabase
     .from("rolls")
     .select("link_id")
@@ -14,20 +30,15 @@ export async function POST() {
 
   const exclude: string[] = (last.data ?? []).map((r: any) => r.link_id);
 
-  const rpc = await supabase.rpc("random_link_excluding", { exclude_ids: exclude.length ? exclude : null });
-  let picked = rpc.data && rpc.data[0];
+  // Build eligible list; if exclusion removes everything, ignore it
+  let eligible = all.filter(l => !exclude.includes(l.id));
+  if (eligible.length === 0) eligible = all;
 
-  if (!picked) {
-    const all = await supabase
-      .from("links")
-      .select("id,url,title,thumbnail_url,embed_html");
+  // Pick one
+  const picked = eligible[Math.floor(Math.random() * eligible.length)];
 
-    const eligible = (all.data ?? []).filter(l => !exclude.includes(l.id));
-    if (eligible.length) picked = eligible[Math.floor(Math.random() * eligible.length)];
-  }
-
-  if (!picked) return NextResponse.json({ error: "No links yet." }, { status: 404 });
-
+  // Write history (best-effort)
   await supabase.from("rolls").insert({ user_id: user.id, link_id: picked.id });
+
   return NextResponse.json(picked);
 }
