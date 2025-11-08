@@ -53,8 +53,18 @@ function HomeContent() {
         <div className="rounded-2xl border p-4">
           <a href={rolled.url} target="_blank" className="font-semibold hover:underline">
             {rolled.title || rolled.url}
+            <div>
+            {rolled.thumbnail_url && (
+                <img
+                  src={rolled.thumbnail_url}
+                  className="mt-3 max-h-60 object-contain rounded-lg"
+                  alt={rolled.title || "Thumbnail"}
+                />
+              )}
+          </div>
           </a>
           {clean && <div className="mt-3" dangerouslySetInnerHTML={{ __html: clean }} />}
+
         </div>
       )}
     </div>
