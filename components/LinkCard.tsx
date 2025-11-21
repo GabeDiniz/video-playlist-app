@@ -26,7 +26,7 @@ export default function LinkCard({ link, onDeleted }:{ link: Link, onDeleted?: (
     <div className="rounded-2xl border p-4 shadow-sm">
       <div className="flex items-center gap-3">
         {link.thumbnail_url && (
-          <img src={link.thumbnail_url} alt="" className="w-20 h-12 object-cover rounded-lg" />
+          <img src={link.thumbnail_url} alt="" className="w-20 h-12 max-w-32 object-cover rounded-lg" />
         )}
         <div className="flex-1">
           <a href={link.url} target="_blank" className="font-medium hover:underline">
